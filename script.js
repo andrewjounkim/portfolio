@@ -88,6 +88,10 @@
       var tk = moved ? tickFor(lastFrac) : null;
       if (tk) {
         if (statusEl) statusEl.textContent = 'heading to ' + tk.label + '…';
+        // reset before leaving: some browsers restore this exact page (with
+        // its stretched name) from cache on the way back, instead of a
+        // fresh load, so don't leave the stretch as the last-saved frame
+        applyScale(1);
         var delay = reduceMotion ? 100 : 480;
         setTimeout(function(){ window.location.href = tk.dest; }, delay);
         return;
@@ -108,6 +112,18 @@
     grip.addEventListener('touchstart', pointerDown, { passive: true });
     window.addEventListener('touchmove', pointerMove, { passive: true });
     window.addEventListener('touchend', pointerUp);
+
+    // if the browser restores this page from cache (back/forward) instead of
+    // a fresh load, it can still be mid-stretch from the last visit -- ease
+    // it back to normal instead of leaving it stuck
+    window.addEventListener('pageshow', function(e){
+      if (e.persisted && curScale !== 1) {
+        dragging = false;
+        armTick(null);
+        if (statusEl) statusEl.textContent = IDLE_TEXT;
+        springTo(1, 150, 6);
+      }
+    });
 
     // one-time onboarding nudge: a tiny automatic stretch, a glow on the
     // hint text, and a pulse on the graph panel, so first-time visitors
