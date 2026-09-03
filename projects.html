@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Projects — Andrew Kim</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,340..600;1,9..144,400..560&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site-nav">
+  <a class="site-nav-home" href="index.html">Andrew Kim</a>
+  <nav class="site-nav-links" aria-label="Primary">
+    <a href="about.html">About</a>
+    <a href="projects.html" class="active" aria-current="page">Projects</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+</header>
+
+<main>
+  <section id="projects" class="wrap">
+    <div class="phase-head">
+      <div class="eyebrow"><span class="tag" style="color:var(--blueprint)"></span>Projects</div>
+      <h2>Projects, plotted like a map, not a list.</h2>
+      <p class="kicker">Position = character of the project. Color = which discipline led it. Click a point.</p>
+    </div>
+
+    <div class="chart-layout">
+      <div class="chart-card">
+        <svg id="projChart" viewBox="0 0 400 400" role="group" aria-label="Projects plotted by research-versus-applied and materials-versus-biology character">
+          <line class="grid-line" x1="0" y1="100" x2="400" y2="100"/>
+          <line class="grid-line" x1="0" y1="300" x2="400" y2="300"/>
+          <line class="grid-line" x1="100" y1="0" x2="100" y2="400"/>
+          <line class="grid-line" x1="300" y1="0" x2="300" y2="400"/>
+          <line class="axis-line" x1="200" y1="8" x2="200" y2="392"/>
+          <line class="axis-line" x1="8" y1="200" x2="392" y2="200"/>
+          <text class="quad-label" x="14" y="20">research · biology-led</text>
+          <text class="quad-label" x="386" y="20" text-anchor="end">applied · biology-led</text>
+          <text class="quad-label" x="14" y="386">research · materials-led</text>
+          <text class="quad-label" x="386" y="386" text-anchor="end">applied · materials-led</text>
+
+          <g class="pt active" data-key="scaffold" data-cat="materials" tabindex="0" transform="translate(130,170)">
+            <circle class="hit" r="17" fill="transparent"/>
+            <circle class="halo" r="12" stroke="var(--cat-materials)"/>
+            <circle class="core" r="6" fill="var(--cat-materials)"/>
+            <text x="12" y="-10">Piezoelectric Bone Scaffolds</text>
+          </g>
+          <g class="pt" data-key="stent" data-cat="materials" tabindex="0" transform="translate(112,222)">
+            <circle class="hit" r="17" fill="transparent"/>
+            <circle class="halo" r="12" stroke="var(--cat-materials)"/>
+            <circle class="core" r="6" fill="var(--cat-materials)"/>
+            <text x="-12" y="20" text-anchor="end">Nitinol Stent Fatigue Modeling</text>
+          </g>
+          <g class="pt" data-key="sweat" data-cat="hybrid" tabindex="0" transform="translate(282,150)">
+            <circle class="hit" r="17" fill="transparent"/>
+            <circle class="halo" r="12" stroke="var(--cat-hybrid)"/>
+            <circle class="core" r="6" fill="var(--cat-hybrid)"/>
+            <text x="12" y="-10">Sweat Biosensor Substrate</text>
+          </g>
+          <g class="pt" data-key="hydrogel" data-cat="bme" tabindex="0" transform="translate(300,88)">
+            <circle class="hit" r="17" fill="transparent"/>
+            <circle class="halo" r="12" stroke="var(--cat-bme)"/>
+            <circle class="core" r="6" fill="var(--cat-bme)"/>
+            <text x="12" y="-10">Hydrogel Prosthetic Actuator</text>
+          </g>
+        </svg>
+        <div class="legend" id="legend">
+          <button data-cat="materials"><span class="swatch" style="background:var(--cat-materials)"></span>Materials-led</button>
+          <button data-cat="hybrid"><span class="swatch" style="background:var(--cat-hybrid)"></span>Hybrid</button>
+          <button data-cat="bme"><span class="swatch" style="background:var(--cat-bme)"></span>Biomedical-led</button>
+        </div>
+      </div>
+
+      <div class="detail-card" id="detailCard"><!-- filled by script.js --></div>
+    </div>
+  </section>
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>

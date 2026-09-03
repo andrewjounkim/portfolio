@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact — Andrew Kim</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,340..600;1,9..144,400..560&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site-nav">
+  <a class="site-nav-home" href="index.html">Andrew Kim</a>
+  <nav class="site-nav-links" aria-label="Primary">
+    <a href="about.html">About</a>
+    <a href="projects.html">Projects</a>
+    <a href="contact.html" class="active" aria-current="page">Contact</a>
+  </nav>
+</header>
+
+<main>
+  <section id="contact" class="wrap">
+    <div class="phase-head">
+      <div class="eyebrow"><span class="tag" style="color:var(--eosin)"></span>Contact</div>
+      <h2>Let's talk.</h2>
+    </div>
+    <div class="contact-grid">
+      <div class="contact-links mono">
+        <a href="mailto:andrew.kim@example.com">andrew.kim@example.com</a>
+        <a href="#">github.com/andrewkim</a>
+        <a href="#">linkedin.com/in/andrewkim</a>
+        <a href="#">CV (PDF)</a>
+      </div>
+      <form class="contact-form" action="mailto:andrew.kim@example.com" method="post" enctype="text/plain">
+        <label>Name<input type="text" name="name" autocomplete="name" required></label>
+        <label>Email<input type="email" name="email" autocomplete="email" required></label>
+        <label>Message<textarea name="message" rows="4" required></textarea></label>
+        <button type="submit">Send</button>
+      </form>
+    </div>
+    <p class="footnote">Placeholder content throughout — swap in your name, links and projects before this goes public. The form above opens the visitor's email client by default; wire it to something like Formspree if you'd rather it send silently. <button class="linklike" id="openSpec" type="button">Curious what my spec sheet looks like?</button></p>
+  </section>
+</main>
+
+<div class="modal-backdrop" id="specBackdrop" role="dialog" aria-modal="true" aria-labelledby="specTitle">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <h3 id="specTitle">Engineering Data Sheet</h3>
+        <div class="sub">Specimen 0417 · Materials × Biomedical Engineering</div>
+      </div>
+      <button class="modal-close" id="closeSpec" aria-label="Close">✕</button>
+    </div>
+    <table class="spec-table">
+      <tr><td class="prop">Young's modulus<small>resilience under pressure</small></td><td class="val">high, verified deadline week</td></tr>
+      <tr><td class="prop">Yield strength<small>load before behavior changes</small></td><td class="val">~3 all-nighters</td></tr>
+      <tr><td class="prop">Ultimate tensile strength<small>peak output condition</small></td><td class="val">quiet lab, good playlist</td></tr>
+      <tr><td class="prop">Fatigue limit<small>meetings before performance drops</small></td><td class="val">4 / day</td></tr>
+      <tr><td class="prop">Biocompatibility<small>plays well with others</small></td><td class="val">low rejection rate</td></tr>
+      <tr><td class="prop">Fracture toughness<small>recovery from failed experiments</small></td><td class="val">high, see About</td></tr>
+      <tr><td class="prop">Density<small>coffee : water ratio</small></td><td class="val">concerning</td></tr>
+      <tr><td class="prop">Composition</td><td class="val">materials sci., BME, trace stubbornness</td></tr>
+    </table>
+    <div class="modal-foot">Tested under standard lab conditions (i.e. finals week). Results not independently verified.</div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

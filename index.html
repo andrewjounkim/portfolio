@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Andrew Kim — Portfolio</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,340..600;1,9..144,400..560&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<main>
+  <section id="intro" class="wrap">
+    <div class="hero-name">
+      <div class="grip-zone" id="grip">
+        <h1 id="gripText"><span class="first">Andrew</span><span class="last">Kim</span></h1>
+      </div>
+      <p class="pull-status" id="pullStatus">stretch to explore →</p>
+      <nav class="quiet-nav" aria-label="Site navigation">
+        <a href="about.html">About</a>
+        <a href="projects.html">Projects</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </div>
+    <div class="hero-graph" id="heroGraph">
+      <svg id="heroCurve" class="hero-curve" viewBox="0 0 600 400" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+        <!-- axis, origin at (60,360) -- this panel has its own card background now,
+             so the axis doesn't need to chase the page's background grid to look right -->
+
+        <line class="curve-axis-line" x1="60" y1="360" x2="60" y2="40"/>
+        <line class="curve-axis-line" x1="60" y1="360" x2="540" y2="360"/>
+        <polygon class="curve-axis-arrow" points="53,52 67,52 60,36"/>
+        <polygon class="curve-axis-arrow" points="530,353 530,367 546,360"/>
+        <text class="curve-axis-label" x="470" y="388">STRAIN</text>
+        <text class="curve-axis-label" x="32" y="200" transform="rotate(-90 32 200)">STRESS</text>
+
+        <line class="curve-guide-line" x1="60" y1="40" x2="428" y2="40"/>
+        <line class="curve-guide-line" x1="428" y1="40" x2="428" y2="360"/>
+
+        <path d="M60,345 C110,345 135,255 160,215 C172,197 178,202 185,192 C260,150 330,110 380,80 C398,69 412,58 428,40 C440,54 434,80 420,102 C400,135 385,220 382,300 C381,325 381,345 383,360"/>
+
+        <g class="tick" data-dest="about.html" transform="translate(180,198)">
+          <circle r="8"/><text x="14" y="7">ABOUT</text>
+        </g>
+        <g class="tick" data-dest="projects.html" transform="translate(330,112)">
+          <circle r="8"/><text x="14" y="7">PROJECTS</text>
+        </g>
+        <g class="tick" data-dest="contact.html" transform="translate(428,40)">
+          <circle r="8"/><text x="16" y="-12">CONTACT</text>
+        </g>
+      </svg>
+    </div>
+  </section>
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>
