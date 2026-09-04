@@ -157,7 +157,8 @@
     var projects = {
       yonsei: { title: 'Radiation Dosimetry Organ Modeling', cat: 'materials', tags: ['Research', 'Yonsei University'], featured: true,
         body: "Constructing 3D organ models from medical imaging data (TotalSegmentator) for Monte Carlo radiation-transport simulations in PHITS, modeling how dose deposits through human anatomy.",
-        stats: [['PHITS', 'simulation engine'], ['CT/MRI', '3D organ models'], ['2025–26', 'ongoing']] },
+        stats: [['PHITS', 'simulation engine'], ['CT/MRI', '3D organ models'], ['2025–26', 'ongoing']],
+        link: 'https://rsdl.yonsei.ac.kr/news/activities', linkLabel: 'See the lab in action ↗' },
       flowx: { title: 'Cardiovascular Fluid–Structure Modeling', cat: 'bme', tags: ['Research', 'Kyung Hee University'],
         body: "Designed 3D models of the lung and cardiovascular system from patients' CT/MRI scans with pediatric surgeons, studying fluid-structure interactions to help guide critical operations.",
         stats: [['CT/MRI', 'patient scans'], ['Pediatric', 'surgical planning'], ['Jul–Aug 2023', 'duration']] },
@@ -178,11 +179,17 @@
 
     function renderDetail(key) {
       var p = projects[key];
+      var media = p.photos
+        ? '<div class="photo-strip">' + p.photos.map(function(ph){
+            return '<figure><img src="'+ph.url+'" alt="'+ph.caption+'" loading="lazy"><figcaption>'+ph.caption+'</figcaption></figure>';
+          }).join('') + '</div>' +
+          (p.photoCredit ? '<a class="photo-credit" href="'+p.photoCredit+'" target="_blank" rel="noopener">Photos: IDOL, Yonsei University ↗</a>' : '')
+        : '<div class="shot-slot">'+shotIcon+'<span>image</span></div>';
       detailCard.innerHTML =
         '<div class="tagrow">' + (p.featured ? '<span class="pill featured">Featured</span>' : '') +
           p.tags.map(function(t){ return '<span class="pill">'+t+'</span>'; }).join('') + '</div>' +
         '<h3>'+p.title+'</h3>' +
-        '<div class="shot-slot">'+shotIcon+'<span>image</span></div>' +
+        media +
         '<p>'+p.body+'</p>' +
         '<div class="stat-row">' + p.stats.map(function(s){ return '<div class="stat"><b>'+s[0]+'</b><span>'+s[1]+'</span></div>'; }).join('') + '</div>' +
         (p.link ? '<a class="code-link" href="'+p.link+'" target="_blank" rel="noopener">'+(p.linkLabel || 'Learn more ↗')+'</a>' : '');

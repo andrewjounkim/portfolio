@@ -9,9 +9,9 @@
 </head>
 <body>
 
-<header class="site-nav">
+<nav aria-label="Back to home">
   <a class="back-link" href="index.html">← Back</a>
-</header>
+</nav>
 
 <main>
   <section id="projects" class="wrap">
@@ -23,6 +23,7 @@
 
     <div class="chart-layout">
       <div class="chart-card">
+        <p class="chart-hint">↳ Click a point to open that project — labels stay hidden until then, so nothing overlaps.</p>
         <svg id="projChart" viewBox="0 0 400 400" role="group" aria-label="Projects plotted by research-versus-applied and materials-versus-biology character">
           <line class="grid-line" x1="0" y1="100" x2="400" y2="100"/>
           <line class="grid-line" x1="0" y1="300" x2="400" y2="300"/>
@@ -51,7 +52,7 @@
             <circle class="hit" r="17" fill="transparent"/>
             <circle class="halo" r="12" stroke="var(--cat-hybrid)"/>
             <circle class="core" r="6" fill="var(--cat-hybrid)"/>
-            <text x="-12" y="-10" text-anchor="end">Prevention Drone</text>
+            <text x="-12" y="-10" text-anchor="end">Antibacterial Drone</text>
           </g>
           <g class="pt" data-key="superbug" data-cat="hybrid" tabindex="0" transform="translate(130,150)">
             <circle class="hit" r="17" fill="transparent"/>
@@ -63,7 +64,7 @@
             <circle class="hit" r="17" fill="transparent"/>
             <circle class="halo" r="12" stroke="var(--cat-bme)"/>
             <circle class="core" r="6" fill="var(--cat-bme)"/>
-            <text x="12" y="20">Primrose Extract</text>
+            <text x="12" y="20">Natural Antimicrobial Study</text>
           </g>
         </svg>
         <div class="legend" id="legend">
