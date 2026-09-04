@@ -155,18 +155,21 @@
   var detailCard = document.getElementById('detailCard');
   if (detailCard) {
     var projects = {
-      scaffold: { title: 'Piezoelectric Bone Scaffolds', cat: 'materials', tags: ['Materials', 'Research'], featured: true, code: '#',
-        body: "3D-printed PVDF–barium-titanate lattice that turns ordinary joint loading into a local electric field, mimicking bone's own growth signal.",
-        stats: [['0.35mm', 'strut res.'], ['23%', '↑ proliferation'], ['14mo', 'duration']] },
-      stent: { title: 'Nitinol Stent Fatigue Modeling', cat: 'materials', tags: ['Materials', 'Research'], code: '#',
-        body: "Cyclic-loading fatigue model for shape-memory-alloy stents, predicting crack initiation before it happens inside a patient.",
-        stats: [['10M', 'cycles modeled'], ['3', 'failure modes ID’d'], ['6mo', 'duration']] },
-      sweat: { title: 'Sweat Biosensor Substrate', cat: 'hybrid', tags: ['Biomedical', 'Applied'], code: '#',
-        body: "Flexible, biocompatible polymer substrate carrying an electrochemical sensor array for continuous wearable sweat analysis.",
-        stats: [['<2mm', 'substrate thickness'], ['92%', 'signal retention, 8h wear'], ['4mo', 'duration']] },
-      hydrogel: { title: 'Hydrogel Prosthetic Actuator', cat: 'bme', tags: ['Biomedical', 'Applied'], code: '#',
-        body: "pH-responsive hydrogel actuator that contracts like muscle tissue, aimed at low-cost prosthetic grip assistance.",
-        stats: [['38%', 'contraction strain'], ['<$40', 'materials cost'], ['5mo', 'duration']] }
+      yonsei: { title: 'Radiation Dosimetry Organ Modeling', cat: 'materials', tags: ['Research', 'Yonsei University'], featured: true,
+        body: "Constructing 3D organ models from medical imaging data (TotalSegmentator) for Monte Carlo radiation-transport simulations in PHITS, modeling how dose deposits through human anatomy.",
+        stats: [['PHITS', 'simulation engine'], ['CT/MRI', '3D organ models'], ['2025–26', 'ongoing']] },
+      flowx: { title: 'Cardiovascular Fluid–Structure Modeling', cat: 'bme', tags: ['Research', 'Kyung Hee University'],
+        body: "Designed 3D models of the lung and cardiovascular system from patients' CT/MRI scans with pediatric surgeons, studying fluid-structure interactions to help guide critical operations.",
+        stats: [['CT/MRI', 'patient scans'], ['Pediatric', 'surgical planning'], ['Jul–Aug 2023', 'duration']] },
+      nearthlab: { title: 'Antibiotic-Resistance Prevention Drone', cat: 'hybrid', tags: ['Applied', 'NearthLab'],
+        body: "Developed a prototype drone that sprays a natural solution into public bodies of water to prevent infection linked to antibiotic resistance, and published the work in the company journal.",
+        stats: [['Prototype', 'drone built'], ['Published', 'company journal'], ['Jun–Nov 2024', 'duration']] },
+      superbug: { title: 'Phytoextract Superbug Inhibitor + Predictive Drone', cat: 'hybrid', tags: ['Independent Research', '2024'],
+        body: "Engineered an AI-powered drone to predict antibiotic-resistant bacteria, and tested plant extracts as inhibitors of plasmid-driven superbug transformation in pathogens thawed from permafrost.",
+        stats: [['AI-powered', 'drone system'], ['Plant extracts', 'as inhibitors'], ['Jun–Sept 2024', 'duration']] },
+      primrose: { title: 'Evening Primrose Extract for Waterborne Infection', cat: 'bme', tags: ['Independent Research', '2023'],
+        body: "Investigated Evening Primrose extract's anti-inflammatory and apoptosis-inducing effects as a natural treatment for waterborne infection and pulmonary disease in war-torn regions.",
+        stats: [['Evening Primrose', 'extract'], ['Anti-inflammatory', '& apoptosis-inducing'], ['Jun–Sept 2023', 'duration']] }
     };
     var pts = Array.prototype.slice.call(document.querySelectorAll('.pt'));
     var legendBtns = Array.prototype.slice.call(document.querySelectorAll('#legend button'));
@@ -179,10 +182,10 @@
         '<div class="tagrow">' + (p.featured ? '<span class="pill featured">Featured</span>' : '') +
           p.tags.map(function(t){ return '<span class="pill">'+t+'</span>'; }).join('') + '</div>' +
         '<h3>'+p.title+'</h3>' +
-        '<div class="shot-slot">'+shotIcon+'<span>screenshot</span></div>' +
+        '<div class="shot-slot">'+shotIcon+'<span>image</span></div>' +
         '<p>'+p.body+'</p>' +
         '<div class="stat-row">' + p.stats.map(function(s){ return '<div class="stat"><b>'+s[0]+'</b><span>'+s[1]+'</span></div>'; }).join('') + '</div>' +
-        '<a class="code-link" href="'+p.code+'" target="_blank" rel="noopener">View code ↗</a>';
+        (p.link ? '<a class="code-link" href="'+p.link+'" target="_blank" rel="noopener">'+(p.linkLabel || 'Learn more ↗')+'</a>' : '');
     }
     function selectPoint(key) {
       pts.forEach(function(pt){ pt.classList.toggle('active', pt.dataset.key === key); });
@@ -192,7 +195,7 @@
       pt.addEventListener('click', function(){ selectPoint(pt.dataset.key); });
       pt.addEventListener('keydown', function(e){ if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectPoint(pt.dataset.key); } });
     });
-    selectPoint('scaffold');
+    selectPoint('yonsei');
 
     function applyLegend() {
       pts.forEach(function(pt){

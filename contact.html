@@ -10,12 +10,7 @@
 <body>
 
 <header class="site-nav">
-  <a class="site-nav-home" href="index.html">Andrew Kim</a>
-  <nav class="site-nav-links" aria-label="Primary">
-    <a href="about.html">About</a>
-    <a href="projects.html">Projects</a>
-    <a href="contact.html" class="active" aria-current="page">Contact</a>
-  </nav>
+  <a class="back-link" href="index.html">← Back</a>
 </header>
 
 <main>
@@ -26,19 +21,18 @@
     </div>
     <div class="contact-grid">
       <div class="contact-links mono">
-        <a href="mailto:andrew.kim@example.com">andrew.kim@example.com</a>
-        <a href="#">github.com/andrewkim</a>
-        <a href="#">linkedin.com/in/andrewkim</a>
-        <a href="#">CV (PDF)</a>
+        <a href="mailto:ajk2@andrew.cmu.edu">ajk2@andrew.cmu.edu</a>
+        <a href="https://www.linkedin.com/in/andrewjounkim/" target="_blank" rel="noopener">linkedin.com/in/andrewjounkim</a>
+        <a href="resume.pdf" target="_blank" rel="noopener">Resume (PDF)</a>
       </div>
-      <form class="contact-form" action="mailto:andrew.kim@example.com" method="post" enctype="text/plain">
+      <form class="contact-form" action="mailto:ajk2@andrew.cmu.edu" method="post" enctype="text/plain">
         <label>Name<input type="text" name="name" autocomplete="name" required></label>
         <label>Email<input type="email" name="email" autocomplete="email" required></label>
         <label>Message<textarea name="message" rows="4" required></textarea></label>
         <button type="submit">Send</button>
       </form>
     </div>
-    <p class="footnote">Placeholder content throughout — swap in your name, links and projects before this goes public. The form above opens the visitor's email client by default; wire it to something like Formspree if you'd rather it send silently. <button class="linklike" id="openSpec" type="button">Curious what my spec sheet looks like?</button></p>
+    <p class="footnote">The form above opens your email client by default — wire it to something like Formspree if you'd rather it send silently. <button class="linklike" id="openSpec" type="button">Curious what my spec sheet looks like?</button></p>
   </section>
 </main>
 
