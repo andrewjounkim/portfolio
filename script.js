@@ -164,7 +164,8 @@
         stats: [['CT/MRI', 'patient scans'], ['Pediatric', 'surgical planning'], ['Jul–Aug 2023', 'duration']] },
       nearthlab: { title: 'Antibiotic-Resistance Prevention Drone', cat: 'hybrid', tags: ['Applied', 'NearthLab'],
         body: "Developed a prototype drone that sprays a natural solution into public bodies of water to prevent infection linked to antibiotic resistance, and published the work in the company journal.",
-        stats: [['Prototype', 'drone built'], ['Published', 'company journal'], ['Jun–Nov 2024', 'duration']] },
+        stats: [['Prototype', 'drone built'], ['Published', 'company journal'], ['Jun–Nov 2024', 'duration']],
+        link: 'https://nearthlab.com/', linkLabel: 'NearthLab ↗' },
       superbug: { title: 'Phytoextract Superbug Inhibitor + Predictive Drone', cat: 'hybrid', tags: ['Independent Research', '2024'],
         body: "Engineered an AI-powered drone to predict antibiotic-resistant bacteria, and tested plant extracts as inhibitors of plasmid-driven superbug transformation in pathogens thawed from permafrost.",
         stats: [['AI-powered', 'drone system'], ['Plant extracts', 'as inhibitors'], ['Jun–Sept 2024', 'duration']] },
@@ -183,6 +184,7 @@
         ? '<div class="photo-strip">' + p.photos.map(function(ph){
             return '<figure><img src="'+ph.url+'" alt="'+ph.caption+'" loading="lazy"><figcaption>'+ph.caption+'</figcaption></figure>';
           }).join('') + '</div>' +
+          (p.photos.length > 1 ? '<p class="photo-hint">swipe for more →</p>' : '') +
           (p.photoCredit ? '<a class="photo-credit" href="'+p.photoCredit+'" target="_blank" rel="noopener">Photos: IDOL, Yonsei University ↗</a>' : '')
         : '<div class="shot-slot">'+shotIcon+'<span>image</span></div>';
       detailCard.innerHTML =
