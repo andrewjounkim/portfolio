@@ -54,7 +54,6 @@
     if (audioUnlocked) return;
     var ctx = getAudioCtx();
     if (!ctx) return;
-    audioUnlocked = true;
     try {
       var buffer = ctx.createBuffer(1, 1, 22050);
       var src = ctx.createBufferSource();
@@ -62,8 +61,16 @@
       src.connect(ctx.destination);
       src.start(0);
     } catch (e) {}
+    // only consider it truly unlocked once the context reports "running" --
+    // if resume() hasn't actually taken effect yet, leave audioUnlocked
+    // false so the next tap/gesture tries again instead of giving up
+    // after one attempt that may not have landed
+    if (ctx.state === 'running') audioUnlocked = true;
   }
-  ['pointerdown', 'touchstart', 'keydown'].forEach(function(evt){
+  // try on every kind of first interaction a phone or desktop could send,
+  // not just one -- some mobile browsers only count certain event types as
+  // a "real" gesture for unlocking audio
+  ['pointerdown', 'touchstart', 'touchend', 'mousedown', 'click', 'keydown'].forEach(function(evt){
     document.addEventListener(evt, unlockAudio, { passive: true });
   });
 
@@ -78,6 +85,7 @@
   // is literally wiring the sound: oscillator generates it, gain shapes its
   // volume, destination is the speakers.
   function playClick(){
+    unlockAudio(); // defensive: retry the unlock here too in case the global listeners above missed this exact gesture
     var ctx = getAudioCtx();
     if (!ctx) return;
     var osc = ctx.createOscillator();
@@ -100,6 +108,7 @@
   // character instead of a flat blip. "triangle" wave type just sounds a
   // little richer/rounder than the plain sine wave used for clicks.
   function playPluck(){
+    unlockAudio();
     var ctx = getAudioCtx();
     if (!ctx) return;
     var osc = ctx.createOscillator();
@@ -133,6 +142,7 @@
   // described above and starts it playing at its quietest, lowest setting
   // (stretchUpdate immediately raises it from there as you keep pulling)
   function stretchStart(){
+    unlockAudio();
     var ctx = getAudioCtx();
     if (!ctx) return;
     stretchStop();
