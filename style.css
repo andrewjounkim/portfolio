@@ -368,6 +368,10 @@ main > section{ padding: 140px 0 96px; }
   background: var(--ink); color: var(--paper); border:none; border-radius:4px; padding: 10px 20px; cursor:pointer;
 }
 .contact-form button:hover{ background: var(--eosin); }
+.contact-form button:disabled{ opacity:.6; cursor:default; }
+.form-status{
+  margin-top:14px; font-family:"IBM Plex Mono",monospace; font-size:12.5px; color: var(--ink-muted); min-height:1.2em;
+}
 .linklike{ background:none; border:none; padding:0; font: inherit; color: var(--blueprint); text-decoration:underline; cursor:pointer; }
 .linklike:hover{ color: var(--eosin); }
 .footnote{ margin-top: 60px; font-family:"IBM Plex Mono",monospace; font-size: 11.5px; color: var(--ink-muted); line-height:1.7; }

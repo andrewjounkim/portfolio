@@ -26,14 +26,19 @@
         <a href="https://www.linkedin.com/in/andrew-joun-kim/" target="_blank" rel="noopener">linkedin.com/in/andrew-joun-kim</a>
         <a href="resume.pdf" target="_blank" rel="noopener">Resume (PDF)</a>
       </div>
-      <form class="contact-form" action="mailto:ajk2@andrew.cmu.edu" method="post" enctype="text/plain">
+      <form class="contact-form" data-email="ajk2@andrew.cmu.edu" action="https://formsubmit.co/ajk2@andrew.cmu.edu" method="POST">
+        <input type="hidden" name="_subject" value="New message from your portfolio site">
+        <input type="hidden" name="_template" value="table">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
         <label>Name<input type="text" name="name" autocomplete="name" required></label>
         <label>Email<input type="email" name="email" autocomplete="email" required></label>
         <label>Message<textarea name="message" rows="4" required></textarea></label>
         <button type="submit">Send</button>
       </form>
+      <p class="form-status" id="formStatus" aria-live="polite"></p>
     </div>
-    <p class="footnote">The form above opens your email client by default — wire it to something like Formspree if you'd rather it send silently. <button class="linklike" id="openSpec" type="button">Curious what my spec sheet looks like?</button></p>
+    <p class="footnote">The form above sends straight to my inbox — no email client required. <button class="linklike" id="openSpec" type="button">Curious what my spec sheet looks like?</button></p>
     <p class="footnote">Credits: fonts via Google Fonts — <a href="https://fonts.google.com/specimen/Fraunces" target="_blank" rel="noopener">Fraunces</a> (Underware), <a href="https://fonts.google.com/specimen/Public+Sans" target="_blank" rel="noopener">Public Sans</a> (USWDS), <a href="https://fonts.google.com/specimen/IBM+Plex+Mono" target="_blank" rel="noopener">IBM Plex Mono</a> (IBM). See the <a href="https://github.com/andrewjounkim/portfolio/blob/main/PROMPT_LOG.md" target="_blank" rel="noopener">prompt log</a> and <a href="https://github.com/andrewjounkim/portfolio" target="_blank" rel="noopener">source</a> on GitHub.</p>
   </section>
 </main>

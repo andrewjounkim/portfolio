@@ -254,6 +254,38 @@
     });
   }
 
+  /* ---------- CONTACT: form actually sends, via FormSubmit.co ----------
+     AI-suggested: a static GitHub Pages site has no server to send email
+     from, so the form posts to FormSubmit (a free, no-account form-relay
+     service) instead of falling back to a mailto: link. Submitting here
+     with fetch() keeps the visitor on the page instead of redirecting them
+     away, and shows a real success/error message. */
+  var contactForm = document.querySelector('.contact-form');
+  if (contactForm) {
+    var formStatus = document.getElementById('formStatus');
+    var submitBtn = contactForm.querySelector('button[type="submit"]');
+    var toEmail = contactForm.dataset.email;
+    contactForm.addEventListener('submit', function(e){
+      e.preventDefault();
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending…';
+      formStatus.textContent = '';
+      fetch('https://formsubmit.co/ajax/' + toEmail, {
+        method: 'POST',
+        headers: { 'Accept': 'application/json' },
+        body: new FormData(contactForm)
+      }).then(function(res){
+        if (!res.ok) throw new Error('bad response');
+        contactForm.hidden = true;
+        formStatus.textContent = "Thanks — your message sent. I'll get back to you soon.";
+      }).catch(function(){
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Send';
+        formStatus.textContent = "Something went wrong sending that — email me directly at " + toEmail + " instead.";
+      });
+    });
+  }
+
   /* ---------- CONTACT: spec sheet modal ---------- */
   var backdrop = document.getElementById('specBackdrop');
   if (backdrop) {
