@@ -372,6 +372,13 @@ main > section{ padding: 140px 0 96px; }
 .linklike:hover{ color: var(--eosin); }
 .footnote{ margin-top: 60px; font-family:"IBM Plex Mono",monospace; font-size: 11.5px; color: var(--ink-muted); line-height:1.7; }
 
+.site-credit{
+  font-family:"IBM Plex Mono",monospace; font-size: 10.5px; color: var(--ink-muted);
+  text-align:center; line-height:1.6; padding: 28px 20px;
+}
+.site-credit a{ color: inherit; text-decoration: underline; }
+.site-credit a:hover{ color: var(--eosin); }
+
 /* ---------- MODAL ---------- */
 .modal-backdrop{
   position: fixed; inset:0; background: rgba(10,14,17,0.55);
