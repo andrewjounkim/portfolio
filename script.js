@@ -322,19 +322,17 @@
         body: "Designed 3D models of the lung and cardiovascular system from patients' CT/MRI scans with pediatric surgeons, studying fluid-structure interactions to help guide critical operations.",
         stats: [['CT/MRI', 'patient scans'], ['Pediatric', 'surgical planning'], ['Jul–Aug 2023', 'duration']],
         photos: [
-          { url: 'images/flowx-1.png', caption: 'Simulated blood-flow patterns through the aortic arch and its branches, color-mapped by flow' }
+          { url: 'images/flowx-1.png', caption: 'Simulated blood-flow through the aortic arch and its branches, color-mapped by flow' },
+          { url: 'images/flowx-2.png', caption: 'The same model from a different angle, showing the full branching vasculature' }
         ] },
-      nearthlab: { title: 'Antibiotic-Resistance Prevention Drone', cat: 'hybrid', tags: ['Applied', 'NearthLab'],
-        body: "Developed a prototype drone that sprays a natural solution into public bodies of water to prevent infection linked to antibiotic resistance, and published the work in the company journal.",
-        stats: [['Prototype', 'drone built'], ['Published', 'company journal'], ['Jun–Nov 2024', 'duration']],
+      nearthlab: { title: 'Antibacterial Drones & Phytoextract Research', cat: 'hybrid', tags: ['Applied', 'NearthLab', 'Independent Research'],
+        body: "Two drone projects tackling antibiotic resistance from different angles. At NearthLab, I helped develop a prototype that sprays a natural antibacterial solution into public bodies of water, published in the company journal. Independently, I engineered an AI-powered drone to predict antibiotic-resistant bacteria, and tested plant extracts as inhibitors of plasmid-driven superbug transformation in pathogens thawed from permafrost.",
+        stats: [['Prototype', 'drone, published'], ['AI-powered', 'outbreak prediction'], ['2024', 'duration']],
         photos: [
           { url: 'images/nearthlab-1.png', caption: 'The prototype on the water, and mid-flight' },
           { url: 'images/nearthlab-2.png', caption: 'Onboard electronics, and the first-person view during a test flight' }
         ],
         link: 'https://nearthlab.com/', linkLabel: 'NearthLab ↗' },
-      superbug: { title: 'Phytoextract Superbug Inhibitor + Predictive Drone', cat: 'hybrid', tags: ['Independent Research', '2024'],
-        body: "Engineered an AI-powered drone to predict antibiotic-resistant bacteria, and tested plant extracts as inhibitors of plasmid-driven superbug transformation in pathogens thawed from permafrost.",
-        stats: [['AI-powered', 'drone system'], ['Plant extracts', 'as inhibitors'], ['Jun–Sept 2024', 'duration']] },
       primrose: { title: 'Evening Primrose Extract for Waterborne Infection', cat: 'bme', tags: ['Independent Research', '2023'],
         body: "Investigated Evening Primrose extract's anti-inflammatory and apoptosis-inducing effects as a natural treatment for waterborne infection and pulmonary disease in war-torn regions.",
         stats: [['Evening Primrose', 'extract'], ['Anti-inflammatory', '& apoptosis-inducing'], ['Jun–Sept 2023', 'duration']],
