@@ -12,6 +12,12 @@
  */
 (function(){
   "use strict";
+  // this one file is linked from all four pages, so most of it is wrapped
+  // in "if (someElement) { ... }" blocks below -- each block only runs on
+  // the page that actually has that element (e.g. the HOME block only
+  // does anything on index.html, since that's the only page with #grip).
+  // that way one script.js works everywhere without throwing errors on
+  // pages that don't have a particular feature.
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   /* ---------- SOUND: tiny synthesized UI sound effects ----------
@@ -160,12 +166,18 @@
     var dragging = false, moved = false, startX = 0, lastFrac = 0, userInteracted = false;
     var curScale = 1, curVel = 0, rafId = null;
 
+    // stretches the name horizontally and spreads the letters out a bit as
+    // it stretches -- s is the scaleX value, so 1 = normal size, 1.5 = 50%
+    // wider. curScale is kept in a variable (not just read off the DOM)
+    // because springTo() below needs to know the current value every frame.
     function applyScale(s) {
       curScale = s;
       var spacing = Math.max(0, s - 1) * 0.09;
       gripText.style.transform = 'scaleX(' + s.toFixed(4) + ')';
       gripText.style.letterSpacing = spacing.toFixed(4) + 'em';
     }
+    // cancels whatever spring animation is currently mid-bounce, if any --
+    // called whenever a new drag starts so two animations can't fight
     function stopSpring() {
       if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
     }
@@ -195,17 +207,31 @@
       }
       rafId = requestAnimationFrame(step);
     }
+    // frac is "how far through the pull" from 0 to 1 (and a bit past 1 if
+    // you overpull) -- this just turns that into a scaleX value
     function dragScale(frac) { return 1 + frac * 0.55; }
 
+    // walks the TICKS list and returns the farthest one you've pulled past,
+    // or null if you haven't reached About yet -- since TICKS is already in
+    // ascending order, the last match in the loop is always the right one
     function tickFor(frac) {
       var hit = null;
       TICKS.forEach(function(tk){ if (frac >= tk.frac) hit = tk; });
       return hit;
     }
+    // highlights whichever tick dot/label matches "dest" and dims the
+    // others (or dims all of them if dest is null, e.g. before the first tick)
     function armTick(dest) {
       tickEls.forEach(function(el){ el.classList.toggle('armed', el.dataset.dest === dest); });
     }
 
+    // these three functions run the whole drag gesture, in order:
+    // pointerDown starts tracking a pull and figures out the max distance
+    // for this screen size; pointerMove updates the stretch, the sound, and
+    // which tick is armed every time the pointer moves; pointerUp decides
+    // whether you actually committed to a page (armed a tick) or just
+    // bounced back. Registered for both mouse (pointer*) and touch events
+    // since not every browser treats touch as pointer events yet.
     function pointerDown(e) {
       userInteracted = true;
       dragging = true; moved = false; lastFrac = 0;
@@ -309,6 +335,12 @@
   /* ---------- PROJECTS: positioning chart ---------- */
   var detailCard = document.getElementById('detailCard');
   if (detailCard) {
+    // all the project content lives right here instead of in the HTML --
+    // each key (yonsei, flowx, etc.) matches the data-key attribute on that
+    // project's point in projects.html, so renderDetail() below can look a
+    // project up by key. "cat" picks the dot color (matches the legend),
+    // "photos" is optional -- projects without one just get a placeholder
+    // box instead of a carousel -- and so is "link".
     var projects = {
       yonsei: { title: 'Radiation Dosimetry Organ Modeling', cat: 'materials', tags: ['Research', 'Yonsei University'], featured: true,
         body: "Constructing 3D organ models from medical imaging data (TotalSegmentator) for Monte Carlo radiation-transport simulations in PHITS, modeling how dose deposits through human anatomy.",
@@ -368,16 +400,23 @@
         '<div class="stat-row">' + p.stats.map(function(s){ return '<div class="stat"><b>'+s[0]+'</b><span>'+s[1]+'</span></div>'; }).join('') + '</div>' +
         (p.link ? '<a class="code-link" href="'+p.link+'" target="_blank" rel="noopener">'+(p.linkLabel || 'Learn more ↗')+'</a>' : '');
     }
+    // marks one point as the selected one (for the highlight ring) and
+    // fills the detail card with its info
     function selectPoint(key) {
       pts.forEach(function(pt){ pt.classList.toggle('active', pt.dataset.key === key); });
       renderDetail(key);
     }
+    // clicking a point selects it; Enter/Space does the same for anyone
+    // tabbing through the chart with a keyboard instead of a mouse
     pts.forEach(function(pt){
       pt.addEventListener('click', function(){ selectPoint(pt.dataset.key); });
       pt.addEventListener('keydown', function(e){ if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectPoint(pt.dataset.key); } });
     });
-    selectPoint('yonsei');
+    selectPoint('yonsei'); // show something in the detail card before anyone's clicked
 
+    // dims out points whose category has been toggled off in the legend,
+    // rather than hiding them completely -- keeps the chart layout stable
+    // instead of things jumping around as you filter
     function applyLegend() {
       pts.forEach(function(pt){
         pt.style.opacity = activeCats[pt.dataset.cat] ? '1' : '0.18';
