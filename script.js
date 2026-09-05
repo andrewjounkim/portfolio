@@ -14,6 +14,104 @@
   "use strict";
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  /* ---------- SOUND: tiny synthesized UI sound effects ----------
+     AI-suggested: instead of shipping actual audio files (licensing to
+     track down, extra network requests, a bigger repo), every sound here
+     is synthesized live with the Web Audio API -- a couple of oscillators
+     shaped with gain/filter envelopes. Browsers won't let audio play until
+     a real user gesture happens, which is naturally true here since every
+     sound is triggered by an actual click or drag. */
+  var audioCtx = null;
+  function getAudioCtx(){
+    if (!audioCtx) {
+      var Ctx = window.AudioContext || window.webkitAudioContext;
+      if (!Ctx) return null;
+      audioCtx = new Ctx();
+    }
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    return audioCtx;
+  }
+
+  // a short, quiet blip for ordinary clicks (links, buttons, chart points)
+  function playClick(){
+    var ctx = getAudioCtx();
+    if (!ctx) return;
+    var osc = ctx.createOscillator();
+    var gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.value = 720;
+    gain.gain.setValueAtTime(0.0001, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.09, ctx.currentTime + 0.008);
+    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.1);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.12);
+  }
+
+  // a quick downward "boing" for a plain click/pluck on the home name
+  // (not a real drag -- see the "moved" check where this gets called)
+  function playPluck(){
+    var ctx = getAudioCtx();
+    if (!ctx) return;
+    var osc = ctx.createOscillator();
+    var gain = ctx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(420, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(140, ctx.currentTime + 0.16);
+    gain.gain.setValueAtTime(0.0001, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.11, ctx.currentTime + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.22);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.24);
+  }
+
+  // the continuous "tension" tone while actively dragging the name --
+  // pitch, brightness, and volume all rise with how far you've pulled
+  // (the AI-suggested part: mapping "stress" to a lowpass filter cutoff
+  // as well as pitch, so it gets both higher AND brighter under tension,
+  // rather than just changing one dimension)
+  var stretchOsc = null, stretchGain = null, stretchFilter = null;
+  function stretchStart(){
+    var ctx = getAudioCtx();
+    if (!ctx) return;
+    stretchStop();
+    stretchOsc = ctx.createOscillator();
+    stretchOsc.type = 'triangle';
+    stretchOsc.frequency.value = 90;
+    stretchFilter = ctx.createBiquadFilter();
+    stretchFilter.type = 'lowpass';
+    stretchFilter.frequency.value = 250;
+    stretchGain = ctx.createGain();
+    stretchGain.gain.value = 0.0001;
+    stretchOsc.connect(stretchFilter).connect(stretchGain).connect(ctx.destination);
+    stretchOsc.start();
+  }
+  function stretchUpdate(frac){
+    if (!stretchOsc) return;
+    var ctx = getAudioCtx();
+    var t = Math.max(0, Math.min(1.3, frac));
+    stretchOsc.frequency.setTargetAtTime(90 + t * 260, ctx.currentTime, 0.03);
+    stretchFilter.frequency.setTargetAtTime(250 + t * 2200, ctx.currentTime, 0.03);
+    stretchGain.gain.setTargetAtTime(0.035 + t * 0.09, ctx.currentTime, 0.03);
+  }
+  function stretchStop(){
+    if (!stretchOsc) return;
+    var ctx = getAudioCtx();
+    var osc = stretchOsc, gain = stretchGain;
+    stretchOsc = null; stretchGain = null; stretchFilter = null;
+    gain.gain.cancelScheduledValues(ctx.currentTime);
+    gain.gain.setTargetAtTime(0.0001, ctx.currentTime, 0.05);
+    setTimeout(function(){ try { osc.stop(); osc.disconnect(); gain.disconnect(); } catch (e) {} }, 300);
+  }
+
+  // one delegated listener covers every link/button/chart-point sitewide,
+  // instead of wiring a click sound onto each element individually
+  document.addEventListener('click', function(e){
+    var el = e.target.closest ? e.target.closest('a, button, .pt') : null;
+    if (el) playClick();
+  });
+
   /* ---------- HOME: pull the name to navigate ---------- */
   var grip = document.getElementById('grip');
   if (grip) {
@@ -98,10 +196,14 @@
       if (!dragging) return;
       var x = (e.touches ? e.touches[0].clientX : e.clientX);
       var dx = x - startX;
-      if (Math.abs(dx) > 4) moved = true;
+      if (Math.abs(dx) > 4) {
+        if (!moved) stretchStart(); // real drag just started -- begin the tension tone
+        moved = true;
+      }
       var px = Math.max(0, Math.min(MAX_PX, dx));
       lastFrac = px / MAX_PX;
       applyScale(dragScale(lastFrac));
+      if (moved) stretchUpdate(lastFrac); // pitch/brightness/volume track how far you've pulled
       var tk = tickFor(lastFrac);
       armTick(tk ? tk.dest : null);
       if (statusEl) statusEl.textContent = tk ? ('→ ' + tk.label) : (moved ? 'keep pulling…' : IDLE_TEXT);
@@ -109,6 +211,8 @@
     function pointerUp() {
       if (!dragging) return;
       dragging = false;
+      stretchStop();
+      if (!moved) playPluck();
       var tk = moved ? tickFor(lastFrac) : null;
       if (tk) {
         if (statusEl) statusEl.textContent = 'heading to ' + tk.label + '…';
