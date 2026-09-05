@@ -394,54 +394,38 @@
   }
 
   /* ---------- CONTACT: form actually sends, via FormSubmit.co ----------
-     AI-suggested: a static GitHub Pages site has no server to send email
+     A static GitHub Pages site has no server of its own to send email
      from, so the form posts to FormSubmit (a free, no-account form-relay
-     service) instead of falling back to a mailto: link. Submitting here
-     with fetch() keeps the visitor on the page instead of redirecting them
-     away, and shows a real success/error message. */
+     service) instead of falling back to a mailto: link.
+
+     I tried doing this with fetch() first so the visitor never leaves the
+     page, but that turned out unreliable -- the AJAX request would just
+     hang with no error, likely blocked somewhere between the browser and
+     FormSubmit (an ad blocker, or a network filter) with no way for my
+     code to detect that. A plain form submission doesn't have that
+     problem: the browser handles it directly instead of my JS waiting on
+     a promise, so there's nothing for JS to get stuck on. The tradeoff is
+     a real page reload -- FormSubmit sends the visitor back here via the
+     hidden "_next" field, and the "?sent=true" on that URL is how this
+     page knows to show a thank-you message instead of the empty form. */
   var contactForm = document.querySelector('.contact-form');
   if (contactForm) {
     var formStatus = document.getElementById('formStatus');
     var submitBtn = contactForm.querySelector('button[type="submit"]');
-    var toEmail = contactForm.dataset.email;
-    contactForm.addEventListener('submit', function(e){
-      e.preventDefault();
+
+    if (/[?&]sent=true\b/.test(location.search)) {
+      contactForm.hidden = true;
+      formStatus.textContent = "Thanks — your message sent. I'll get back to you soon.";
+      // tidy the URL so refreshing the page doesn't show the same message again
+      history.replaceState(null, '', location.pathname);
+    }
+
+    // this just gives quick visual feedback before the page navigates away
+    // to FormSubmit -- it doesn't (and can't) get stuck, since the actual
+    // submit isn't happening in JS at all
+    contactForm.addEventListener('submit', function(){
       submitBtn.disabled = true;
       submitBtn.textContent = 'Sending…';
-      formStatus.textContent = '';
-
-      // FormSubmit's AJAX endpoint expects a JSON body (their docs show
-      // fetch() with Content-Type: application/json), not FormData -- that
-      // mismatch was the actual bug behind the button getting stuck on
-      // "Sending...": the browser was posting multipart/form-data instead,
-      // which the endpoint doesn't handle the way this code assumed.
-      var payload = {};
-      new FormData(contactForm).forEach(function(value, key){ payload[key] = value; });
-
-      // belt-and-suspenders: never let a flaky network leave the button
-      // stuck forever, even if something else unexpected happens
-      var controller = new AbortController();
-      var timeout = setTimeout(function(){ controller.abort(); }, 12000);
-
-      fetch('https://formsubmit.co/ajax/' + toEmail, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify(payload),
-        signal: controller.signal
-      }).then(function(res){
-        clearTimeout(timeout);
-        if (!res.ok) throw new Error('bad response');
-        contactForm.hidden = true;
-        formStatus.textContent = "Thanks — your message sent. I'll get back to you soon.";
-      }).catch(function(){
-        clearTimeout(timeout);
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Send';
-        formStatus.textContent = "Something went wrong sending that — email me directly at " + toEmail + " instead.";
-      });
     });
   }
 
