@@ -270,15 +270,35 @@
       submitBtn.disabled = true;
       submitBtn.textContent = 'Sending…';
       formStatus.textContent = '';
+
+      // FormSubmit's AJAX endpoint expects a JSON body (their docs show
+      // fetch() with Content-Type: application/json), not FormData -- that
+      // mismatch was the actual bug behind the button getting stuck on
+      // "Sending...": the browser was posting multipart/form-data instead,
+      // which the endpoint doesn't handle the way this code assumed.
+      var payload = {};
+      new FormData(contactForm).forEach(function(value, key){ payload[key] = value; });
+
+      // belt-and-suspenders: never let a flaky network leave the button
+      // stuck forever, even if something else unexpected happens
+      var controller = new AbortController();
+      var timeout = setTimeout(function(){ controller.abort(); }, 12000);
+
       fetch('https://formsubmit.co/ajax/' + toEmail, {
         method: 'POST',
-        headers: { 'Accept': 'application/json' },
-        body: new FormData(contactForm)
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(payload),
+        signal: controller.signal
       }).then(function(res){
+        clearTimeout(timeout);
         if (!res.ok) throw new Error('bad response');
         contactForm.hidden = true;
         formStatus.textContent = "Thanks — your message sent. I'll get back to you soon.";
       }).catch(function(){
+        clearTimeout(timeout);
         submitBtn.disabled = false;
         submitBtn.textContent = 'Send';
         formStatus.textContent = "Something went wrong sending that — email me directly at " + toEmail + " instead.";
@@ -286,16 +306,4 @@
     });
   }
 
-  /* ---------- CONTACT: spec sheet modal ---------- */
-  var backdrop = document.getElementById('specBackdrop');
-  if (backdrop) {
-    var openBtn = document.getElementById('openSpec');
-    var closeBtn = document.getElementById('closeSpec');
-    function openModal(){ backdrop.classList.add('open'); closeBtn.focus(); }
-    function closeModal(){ backdrop.classList.remove('open'); openBtn.focus(); }
-    openBtn.addEventListener('click', openModal);
-    closeBtn.addEventListener('click', closeModal);
-    backdrop.addEventListener('click', function(e){ if (e.target === backdrop) closeModal(); });
-    window.addEventListener('keydown', function(e){ if (e.key === 'Escape' && backdrop.classList.contains('open')) closeModal(); });
-  }
 })();
