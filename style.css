@@ -1,3 +1,7 @@
+/* AI usage note (Claude, Anthropic): layout, the color system below, and
+   most of this stylesheet were built with Claude as a coding partner --
+   see PROMPT_LOG.md in the repo root for the conversation, and script.js
+   for a more detailed note on the interactive mechanics specifically. */
 :root{
   color-scheme: light;
   --paper: #eef1f2;
@@ -332,6 +336,7 @@ main > section{ padding: 140px 0 96px; }
 @media (max-width: 520px){
   .photo-strip img{ height:190px; }
 }
+.meta-project{ margin-top:40px; max-width:none; border-left:3px solid var(--eosin); min-height:0; }
 .photo-credit{
   display:inline-block; margin: 0 0 16px; font-family:"IBM Plex Mono",monospace; font-size: 10.5px;
   color: var(--ink-muted); text-decoration:none; border-bottom:1px solid var(--line-strong); padding-bottom:1px;

@@ -1,3 +1,15 @@
+/*
+ * AI USAGE NOTE (Claude, Anthropic): I used Claude as a coding partner for
+ * this whole site, most heavily for interaction mechanics I didn't know how
+ * to build from scratch -- the damped-spring physics, the drag-to-navigate
+ * tick system, and the CSS scroll-snap photo carousel below. I directed the
+ * design decisions (what should be interactive, what to fix when something
+ * looked/behaved wrong) and asked Claude to implement or adjust specific
+ * mechanics, then had it explain how each piece works so I could tune the
+ * actual numbers (spring stiffness/damping, pull distances, tick
+ * thresholds) myself instead of just accepting the first version it wrote.
+ * The full back-and-forth is in PROMPT_LOG.md in the repo root.
+ */
 (function(){
   "use strict";
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -10,6 +22,11 @@
     var statusEl = document.getElementById('pullStatus');
     var tickEls = Array.prototype.slice.call(document.querySelectorAll('.tick'));
     var IDLE_TEXT = statusEl ? statusEl.textContent : 'stretch to explore';
+    // AI-suggested mechanic: map pull distance to destinations as fractions
+    // of a max-pull distance computed per grab from window width (see
+    // pointerDown below), instead of fixed pixel thresholds -- that way the
+    // tick zones stay proportionally spaced on any screen size instead of
+    // breaking on mobile where there's less room to drag.
     // how far (as a fraction of the full pull) before each page arms, in
     // ascending order of distance -- spaced well apart on purpose so it's
     // easy to stop in the zone you actually want
@@ -31,6 +48,13 @@
     function stopSpring() {
       if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
     }
+    // AI-suggested approach: a real damped-harmonic-oscillator simulation
+    // (position + velocity integrated every animation frame) instead of a
+    // canned CSS easing curve, so releasing the name overshoots and settles
+    // like an actual spring. I tuned stiffness/damping per call site (e.g.
+    // 150/6 for a big pull vs. 175/5.5 for a plain click) by trial and
+    // error until the bounce felt right, rather than using whatever Claude
+    // first suggested.
     function springTo(target, stiffness, damping) {
       stopSpring();
       if (reduceMotion) { applyScale(target); curVel = 0; return; }
@@ -113,9 +137,13 @@
     window.addEventListener('touchmove', pointerMove, { passive: true });
     window.addEventListener('touchend', pointerUp);
 
-    // if the browser restores this page from cache (back/forward) instead of
-    // a fresh load, it can still be mid-stretch from the last visit -- ease
-    // it back to normal instead of leaving it stuck
+    // AI-diagnosed bug fix: if the browser restores this page from cache
+    // (back/forward, "bfcache") instead of a fresh load, it can still be
+    // mid-stretch from the last visit -- ease it back to normal instead of
+    // leaving it stuck. I wouldn't have known bfcache was the cause without
+    // asking Claude to help debug it; I did understand and verify the fix
+    // once it was explained (the `pageshow`/`persisted` check is the
+    // standard way to detect a bfcache restore).
     window.addEventListener('pageshow', function(e){
       if (e.persisted && curScale !== 1) {
         dragging = false;
@@ -178,6 +206,11 @@
     var activeCats = { materials: true, hybrid: true, bme: true };
     var shotIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="2.5" y="5" width="19" height="14" rx="1.5"/><circle cx="9" cy="12" r="2.6"/><path d="M14 15l3-3.3 4 4.8"/></svg>';
 
+    // AI-suggested: the "swipe for more" photo carousel (see .photo-strip in
+    // style.css) uses native CSS scroll-snap instead of a JS swipe library
+    // -- that gives a real touch-swipe gesture on phones for free. I chose
+    // this over writing my own touch-drag handler once Claude showed me the
+    // scroll-snap approach existed.
     function renderDetail(key) {
       var p = projects[key];
       var media = p.photos
