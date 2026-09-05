@@ -22,6 +22,7 @@
      a real user gesture happens, which is naturally true here since every
      sound is triggered by an actual click or drag. */
   var audioCtx = null;
+  var audioUnlocked = false;
   function getAudioCtx(){
     if (!audioCtx) {
       var Ctx = window.AudioContext || window.webkitAudioContext;
@@ -31,6 +32,28 @@
     if (audioCtx.state === 'suspended') audioCtx.resume();
     return audioCtx;
   }
+  // AI-diagnosed hardening: a fresh AudioContext can come back "suspended"
+  // even when created inside a click handler, and resume() alone isn't
+  // always enough (iOS Safari in particular needs an actual sound to be
+  // started, not just resumed, during the gesture) -- so unlock explicitly
+  // on the very first interaction of any kind, every page load, rather
+  // than only ever trying inside the sound functions themselves.
+  function unlockAudio(){
+    if (audioUnlocked) return;
+    var ctx = getAudioCtx();
+    if (!ctx) return;
+    audioUnlocked = true;
+    try {
+      var buffer = ctx.createBuffer(1, 1, 22050);
+      var src = ctx.createBufferSource();
+      src.buffer = buffer;
+      src.connect(ctx.destination);
+      src.start(0);
+    } catch (e) {}
+  }
+  ['pointerdown', 'touchstart', 'keydown'].forEach(function(evt){
+    document.addEventListener(evt, unlockAudio, { passive: true });
+  });
 
   // a short, quiet blip for ordinary clicks (links, buttons, chart points)
   function playClick(){
