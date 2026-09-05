@@ -29,6 +29,12 @@
      sound is triggered by an actual click or drag. */
   var audioCtx = null;
   var audioUnlocked = false;
+  // returns the single shared AudioContext, creating it the first time it's
+  // needed. An AudioContext is the object the Web Audio API uses to build
+  // and play sound graphs (oscillator -> gain -> speakers, etc.) -- every
+  // sound function below calls this first to get access to it. If the
+  // browser doesn't support Web Audio at all, this just returns null and
+  // the sound functions quietly do nothing.
   function getAudioCtx(){
     if (!audioCtx) {
       var Ctx = window.AudioContext || window.webkitAudioContext;
@@ -61,7 +67,16 @@
     document.addEventListener(evt, unlockAudio, { passive: true });
   });
 
-  // a short, quiet blip for ordinary clicks (links, buttons, chart points)
+  // a short, quiet blip for ordinary clicks (links, buttons, chart points).
+  // What's happening: an "oscillator" node generates a steady 720Hz sine
+  // wave (a pure, simple tone), and a "gain" node controls its volume over
+  // time -- it ramps up from silent to 0.09 volume in 8ms, then back down
+  // to silent by 100ms, which is what makes it sound like a short blip
+  // instead of a flat beep that just cuts off. exponentialRampToValueAtTime
+  // can't ramp to exactly 0 (it's a percentage-based curve), so 0.0001 is
+  // used as "basically silent" instead. Connecting osc -> gain -> destination
+  // is literally wiring the sound: oscillator generates it, gain shapes its
+  // volume, destination is the speakers.
   function playClick(){
     var ctx = getAudioCtx();
     if (!ctx) return;
@@ -77,8 +92,13 @@
     osc.stop(ctx.currentTime + 0.12);
   }
 
-  // a quick downward "boing" for a plain click/pluck on the home name
-  // (not a real drag -- see the "moved" check where this gets called)
+  // a quick downward "boing" for a plain click/pluck on the home name (not
+  // a real drag -- see the "moved" check in pointerMove where this gets
+  // called instead of the stretch tone). Same idea as playClick above, but
+  // the oscillator's frequency also slides from 420Hz down to 140Hz over
+  // 160ms while it plays, which is what gives it that dropping "boing"
+  // character instead of a flat blip. "triangle" wave type just sounds a
+  // little richer/rounder than the plain sine wave used for clicks.
   function playPluck(){
     var ctx = getAudioCtx();
     if (!ctx) return;
@@ -95,12 +115,23 @@
     osc.stop(ctx.currentTime + 0.24);
   }
 
-  // the continuous "tension" tone while actively dragging the name --
-  // pitch, brightness, and volume all rise with how far you've pulled
-  // (the AI-suggested part: mapping "stress" to a lowpass filter cutoff
-  // as well as pitch, so it gets both higher AND brighter under tension,
-  // rather than just changing one dimension)
+  // the continuous "tension" tone that plays while actively dragging the
+  // name -- unlike the two functions above, this one doesn't play a single
+  // short sound and stop; it starts a tone that keeps running and gets
+  // updated continuously as your finger/mouse moves, then gets stopped
+  // once you let go. Three separate audio nodes are chained together:
+  //   oscillator (the raw tone) -> filter (shapes its tone color) -> gain
+  //   (its volume) -> speakers
+  // stretchUpdate() is called on every pointermove with how far you've
+  // pulled (0 to ~1.3) and pushes all three up together -- pitch, filter
+  // brightness, and volume -- so it sounds like it's under more and more
+  // tension the further you stretch, not just louder or just
+  // higher-pitched on its own.
   var stretchOsc = null, stretchGain = null, stretchFilter = null;
+
+  // starts the tension tone: builds the oscillator -> filter -> gain chain
+  // described above and starts it playing at its quietest, lowest setting
+  // (stretchUpdate immediately raises it from there as you keep pulling)
   function stretchStart(){
     var ctx = getAudioCtx();
     if (!ctx) return;
@@ -109,13 +140,18 @@
     stretchOsc.type = 'triangle';
     stretchOsc.frequency.value = 90;
     stretchFilter = ctx.createBiquadFilter();
-    stretchFilter.type = 'lowpass';
+    stretchFilter.type = 'lowpass'; // a lowpass filter lets low tones through and dampens high ones -- turning its cutoff up makes the sound brighter/harsher
     stretchFilter.frequency.value = 250;
     stretchGain = ctx.createGain();
     stretchGain.gain.value = 0.0001;
     stretchOsc.connect(stretchFilter).connect(stretchGain).connect(ctx.destination);
     stretchOsc.start();
   }
+  // called continuously while dragging -- frac is the current pull amount
+  // (0 = just grabbed it, 1 = reached the last tick, can go a little past).
+  // setTargetAtTime smoothly glides each value toward its new target over
+  // ~30ms instead of jumping instantly, so it doesn't sound choppy even
+  // though this runs on every single pointermove event.
   function stretchUpdate(frac){
     if (!stretchOsc) return;
     var ctx = getAudioCtx();
@@ -124,6 +160,10 @@
     stretchFilter.frequency.setTargetAtTime(250 + t * 2200, ctx.currentTime, 0.03);
     stretchGain.gain.setTargetAtTime(0.035 + t * 0.09, ctx.currentTime, 0.03);
   }
+  // stops the tension tone when you let go -- fades the volume down over
+  // 50ms first (so it doesn't cut off with an audible click), then
+  // actually stops and disconnects the oscillator/gain nodes 300ms later
+  // once the fade has finished, freeing them up for the next drag
   function stretchStop(){
     if (!stretchOsc) return;
     var ctx = getAudioCtx();
@@ -134,20 +174,29 @@
     setTimeout(function(){ try { osc.stop(); osc.disconnect(); gain.disconnect(); } catch (e) {} }, 300);
   }
 
-  // one delegated listener covers every link/button/chart-point sitewide,
-  // instead of wiring a click sound onto each element individually
+  // one "delegated" listener on the whole document covers every
+  // link/button/chart-point sitewide, instead of wiring a click sound onto
+  // each element individually. e.target is whatever element was actually
+  // clicked (which could be, say, the text inside a button rather than the
+  // button itself) -- .closest('a, button, .pt') walks back up from there
+  // to find the nearest link, button, or chart point, if any.
   document.addEventListener('click', function(e){
     var el = e.target.closest ? e.target.closest('a, button, .pt') : null;
     if (el) playClick();
   });
 
-  /* ---------- HOME: pull the name to navigate ---------- */
+  /* ---------- HOME: pull the name to navigate ----------
+     This whole block runs the homepage's main gimmick: instead of a normal
+     nav bar, you click-and-drag (or touch-and-drag) my name sideways, and
+     how far you pull decides which page you land on. Grabbing the element
+     references up front like this is just so every function below can use
+     them without re-querying the DOM every time. */
   var grip = document.getElementById('grip');
   if (grip) {
-    var gripText = document.getElementById('gripText');
-    var heroGraph = document.getElementById('heroGraph');
-    var statusEl = document.getElementById('pullStatus');
-    var tickEls = Array.prototype.slice.call(document.querySelectorAll('.tick'));
+    var gripText = document.getElementById('gripText');   // the actual name text being stretched
+    var heroGraph = document.getElementById('heroGraph');  // the stress-strain graph panel next to it
+    var statusEl = document.getElementById('pullStatus');  // the small "stretch to explore" caption
+    var tickEls = Array.prototype.slice.call(document.querySelectorAll('.tick')); // the dots/labels on the graph
     var IDLE_TEXT = statusEl ? statusEl.textContent : 'stretch to explore';
     // AI-suggested mechanic: map pull distance to destinations as fractions
     // of a max-pull distance computed per grab from window width (see
@@ -188,6 +237,22 @@
     // 150/6 for a big pull vs. 175/5.5 for a plain click) by trial and
     // error until the bounce felt right, rather than using whatever Claude
     // first suggested.
+    //
+    // What the step() function is actually doing, frame by frame: it's a
+    // basic physics simulation of a spring pulling curScale toward target.
+    //   force = how hard the spring is pulling right now. It's stronger
+    //     the farther away curScale is from target (stiffness), and it
+    //     resists the current speed (damping) so it doesn't oscillate
+    //     forever -- this is literally Hooke's law (F = -kx) plus a drag
+    //     term.
+    //   curVel += force * dt -- force changes velocity (this is F = ma
+    //     rearranged, with mass treated as 1).
+    //   next = curScale + curVel * dt -- velocity changes position.
+    // dt is capped at 0.032s so a slow/dropped frame can't make the spring
+    // jump too far in one step. The loop keeps calling itself every frame
+    // (requestAnimationFrame) until both the distance to target and the
+    // remaining velocity are small enough to just snap to the exact target
+    // and stop -- otherwise it would animate forever, chasing tiny decimals.
     function springTo(target, stiffness, damping) {
       stopSpring();
       if (reduceMotion) { applyScale(target); curVel = 0; return; }
@@ -243,17 +308,26 @@
     }
     function pointerMove(e) {
       if (!dragging) return;
+      // works for both mouse and touch: touch events store the coordinate
+      // one level deeper, in a "touches" list, since a touchscreen can
+      // technically track more than one finger at once
       var x = (e.touches ? e.touches[0].clientX : e.clientX);
-      var dx = x - startX;
+      var dx = x - startX; // how far the pointer has moved sideways since pointerDown, in pixels
       if (Math.abs(dx) > 4) {
+        // a tiny wobble under 4px still counts as "just a click," not a
+        // real drag -- this is where that line actually gets crossed
         if (!moved) stretchStart(); // real drag just started -- begin the tension tone
         moved = true;
       }
+      // clamp dx into the 0..MAX_PX range (can't pull backwards past 0, or
+      // past the max), then convert it into lastFrac, a 0-to-1 fraction of
+      // the full pull -- everything else (scale, sound, which tick is
+      // armed) is driven off this one fraction instead of raw pixels
       var px = Math.max(0, Math.min(MAX_PX, dx));
       lastFrac = px / MAX_PX;
       applyScale(dragScale(lastFrac));
       if (moved) stretchUpdate(lastFrac); // pitch/brightness/volume track how far you've pulled
-      var tk = tickFor(lastFrac);
+      var tk = tickFor(lastFrac); // which page (if any) is armed at the current pull distance
       armTick(tk ? tk.dest : null);
       if (statusEl) statusEl.textContent = tk ? ('→ ' + tk.label) : (moved ? 'keep pulling…' : IDLE_TEXT);
     }
@@ -261,7 +335,9 @@
       if (!dragging) return;
       dragging = false;
       stretchStop();
-      if (!moved) playPluck();
+      if (!moved) playPluck(); // it was just a click, not a real drag -- play the pluck sound instead
+      // only counts as "committing" to a page if it was a real drag AND it
+      // ended past at least the first tick -- a plain click never navigates
       var tk = moved ? tickFor(lastFrac) : null;
       if (tk) {
         if (statusEl) statusEl.textContent = 'heading to ' + tk.label + '…';
@@ -270,15 +346,19 @@
         // fresh load, so don't leave the stretch as the last-saved frame
         applyScale(1);
         var delay = reduceMotion ? 100 : 480;
+        // small delay so the "heading to ___" message is actually visible
+        // for a moment before the browser navigates away
         setTimeout(function(){ window.location.href = tk.dest; }, delay);
         return;
       }
+      // didn't reach a tick (or it was just a click) -- spring back to
+      // normal size instead of navigating anywhere
       armTick(null);
       if (statusEl) statusEl.textContent = IDLE_TEXT;
       if (moved) {
         springTo(1, 150, 6);
       } else {
-        curVel += 1.4;
+        curVel += 1.4; // give it a little kick so a plain click still visibly "plucks" instead of just sitting still
         springTo(1, 175, 5.5);
       }
     }
@@ -377,11 +457,22 @@
     var activeCats = { materials: true, hybrid: true, bme: true };
     var shotIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="2.5" y="5" width="19" height="14" rx="1.5"/><circle cx="9" cy="12" r="2.6"/><path d="M14 15l3-3.3 4 4.8"/></svg>';
 
-    // AI-suggested: the "swipe for more" photo carousel (see .photo-strip in
-    // style.css) uses native CSS scroll-snap instead of a JS swipe library
-    // -- that gives a real touch-swipe gesture on phones for free. I chose
-    // this over writing my own touch-drag handler once Claude showed me the
-    // scroll-snap approach existed.
+    // Builds the whole right-hand detail card for one project (by key,
+    // e.g. "yonsei") and drops it into the page as raw HTML. Two pieces
+    // worth explaining:
+    //
+    // 1. "media" is built first, as its own variable, because it's an
+    //    either/or: if this project has a "photos" array, build the
+    //    swipeable carousel (one <figure> per photo, wrapped in a
+    //    .photo-strip div -- the actual swipe gesture comes for free from
+    //    CSS scroll-snap in style.css, not from any JS here); otherwise
+    //    fall back to a plain placeholder box using shotIcon.
+    // 2. detailCard.innerHTML is then one big string built with +, mixing
+    //    the project's data (title, tags, description, stats) into the
+    //    HTML template piece by piece. .map().join('') is how an array
+    //    (like the tags list) turns into repeated HTML chunks -- map turns
+    //    each tag into a <span>, join('') glues them together with nothing
+    //    in between.
     function renderDetail(key) {
       var p = projects[key];
       var media = p.photos
@@ -419,11 +510,19 @@
     // instead of things jumping around as you filter
     function applyLegend() {
       pts.forEach(function(pt){
+        // activeCats is a lookup of category -> true/false; a point whose
+        // category is turned off gets faded out (opacity) and made
+        // unclickable (pointerEvents: 'none') instead of removed, so the
+        // chart layout never shifts around as you toggle filters
         pt.style.opacity = activeCats[pt.dataset.cat] ? '1' : '0.18';
         pt.style.pointerEvents = activeCats[pt.dataset.cat] ? 'auto' : 'none';
       });
+      // 'off' just controls the legend button's own faded-out look, so it's
+      // visually obvious which categories are currently hidden
       legendBtns.forEach(function(b){ b.classList.toggle('off', !activeCats[b.dataset.cat]); });
     }
+    // each legend button flips its own category's true/false and re-runs
+    // applyLegend() to redraw everything based on the new state
     legendBtns.forEach(function(b){
       b.addEventListener('click', function(){
         activeCats[b.dataset.cat] = !activeCats[b.dataset.cat];
@@ -452,6 +551,13 @@
     var formStatus = document.getElementById('formStatus');
     var submitBtn = contactForm.querySelector('button[type="submit"]');
 
+    // location.search is the "?..." part of the current URL. The regex
+    // checks for "sent=true" showing up right after a ? or & (so it
+    // matches "?sent=true" and "?x=1&sent=true" but not something like
+    // "?notsent=true"). If it's there, this page load is the redirect
+    // FormSubmit sent the visitor back to after a successful submission,
+    // so swap the form out for a thank-you message instead of showing an
+    // empty form again.
     if (/[?&]sent=true\b/.test(location.search)) {
       contactForm.hidden = true;
       formStatus.textContent = "Thanks — your message sent. I'll get back to you soon.";
