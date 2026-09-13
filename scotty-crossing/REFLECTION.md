@@ -1,0 +1,3 @@
+# REFLECTION.md
+
+I was not able to fully finish the game but I could add all of the different features that I thought were key to the original Crossy Roads. I made the characters CMU related and you can switch them after collecting coins within the game just like the real game. I mostly got stuck in the graphics department especially with trying to make it 3-dimensional with the side-top view while also having the camera follow my character. I fixed some other bugs like the character going through the trees but overall I think that AI did a good job with following instructions but it just could not grasp how I wanted the graphics just with words and even with screenshots and sketches of how I wanted it to pan out.
