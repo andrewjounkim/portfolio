@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<!-- AI usage note: built with Claude (Anthropic) as a coding partner -- see API_PROMPT_LOG.md and README.md in the repo root. -->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Line Movement Tracker — Andrew Kim</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,340..600;1,9..144,400..560&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav aria-label="Back to projects">
+  <a class="back-link" href="projects.html">← Projects</a>
+</nav>
+
+<main>
+  <section id="linemoves" class="wrap">
+    <div class="phase-head">
+      <div class="eyebrow"><span class="tag" style="color:var(--eosin)"></span>Project · ESPN Scoreboard API</div>
+      <h2>Line Movement Tracker</h2>
+      <p class="kicker">A sportsbook posts an opening line, then stretches it as money and news come in. Pick a league to see which games the market changed its mind about, and by how much.</p>
+    </div>
+
+    <div class="lm-controls">
+      <div class="lm-tabs" id="leagueTabs" role="group" aria-label="League"></div>
+      <div class="lm-row">
+        <label class="ex-field">
+          <span>Day <em class="opt">(optional)</em></span>
+          <input id="dayInput" type="date">
+        </label>
+        <label class="ex-field">
+          <span>Sort by</span>
+          <select id="sortSelect">
+            <option value="ml">Biggest win-probability move</option>
+            <option value="spread">Biggest spread move</option>
+            <option value="total">Biggest total move</option>
+            <option value="time">Start time</option>
+          </select>
+        </label>
+        <button type="button" id="refreshBtn" class="lm-btn">Refresh</button>
+      </div>
+    </div>
+
+    <p class="ex-status" id="status" role="status" aria-live="polite"></p>
+
+    <div id="summary" class="lm-summary" hidden></div>
+    <div id="games" class="lm-games"><!-- filled by linemoves.js --></div>
+
+    <p class="footnote">
+      Data: ESPN's public scoreboard endpoint (<span class="mono">site.api.espn.com</span>), which carries DraftKings' odds for each game, queried live
+      from your browser with no API key. It is ESPN's own undocumented endpoint, not an official betting-data product, so it can change or go quiet.
+      "Open" is the first line posted; "now" is the current line. Only games that haven't started are ranked, since lines on live games aren't comparable.
+      A <em>fair</em> probability is the implied probability with the sportsbook's margin (the vig) divided out, so a move in it reflects a real change
+      in the market's opinion, not just a change in the sportsbook's cut. This is for learning how odds work, not betting advice. Bettors must be of legal age
+      where they live. If gambling stops being fun, call 1-800-GAMBLER.
+    </p>
+  </section>
+</main>
+
+<footer class="site-credit">This page was built for CMU 15-113: Coding with AI, with the help of Claude Code (Sonnet 5) in VS Code.</footer>
+
+<script src="linemoves.js"></script>
+</body>
+</html>
