@@ -84,18 +84,24 @@
       <a class="code-link" href="https://github.com/andrewjounkim/portfolio" target="_blank" rel="noopener">View the code ↗</a>
     </div>
 
-    <div class="meta-project detail-card">
-      <div class="eyebrow"><span class="tag" style="color:var(--eosin)"></span>Also a project · live API</div>
-      <h3>Line Movement Tracker</h3>
-      <p>A live tool built on ESPN's public scoreboard API that shows which games the betting market changed its mind about. It turns each sportsbook moneyline into a "fair" win probability (with the sportsbook's margin divided out), then ranks games by how far that moved from the opening line to now. Pick a league, sort by moneyline, spread, or total, and open any game to see the numbers behind it. Made for CMU 15-113's API assignment; it needs no API key.</p>
-      <div class="stat-row">
-        <div class="stat"><b>ESPN API</b><span>live JSON, no key</span></div>
-        <div class="stat"><b>7 leagues</b><span>NFL to Premier League</span></div>
-        <div class="stat"><b>No-vig math</b><span>implied probability</span></div>
+    <div class="meta-project detail-card shots">
+      <div class="eyebrow"><span class="tag" style="color:var(--eosin)"></span>Also a project · Python + live API</div>
+      <h3>Strikeout Lab</h3>
+      <div class="photo-strip">
+        <figure><img src="images/strikeout-lab-home.jpg" alt="Strikeout Lab home page with the mission statement, live stats, and an interactive matchup builder" loading="lazy"><figcaption>The home page: live league numbers, a mission statement, and a "Try it" matchup builder that draws a forecast on the spot.</figcaption></figure>
+        <figure><img src="images/strikeout-lab-today.jpg" alt="Strikeout Lab's Today's Games page ranking which pitchers the opposing bats could help or hurt" loading="lazy"><figcaption>Today's Games: every probable starter modeled against the opposing lineup, with the batters behind each number.</figcaption></figure>
+        <figure><img src="images/strikeout-lab-lab.jpg" alt="Strikeout Lab's Forecast Lab showing a strikeout probability chart" loading="lazy"><figcaption>The Forecast Lab: expected strikeouts, the chance of going over or under a line, and how the workload changes it.</figcaption></figure>
       </div>
-      <a class="code-link" href="linemoves.html">Open the tracker →</a>
+      <p class="photo-hint">swipe for more →</p>
+      <p>An interactive Python web app that models MLB pitcher strikeouts. It pulls live team, pitcher, batter, and schedule data from the free MLB Stats API, then uses a transparent binomial model to estimate how many strikeouts to expect for a chosen pitcher, opponent, and workload, and how likely the pitcher is to go over a hypothetical line. A daily view shows which pitchers the opposing lineup could help or hurt. Made for CMU 15-113's API assignment as an educational statistics project, with the assumptions and limits spelled out in the app; it is not a betting tool. It runs locally with one command, so this page links to the code and screenshots.</p>
+      <div class="stat-row">
+        <div class="stat"><b>MLB Stats API</b><span>free, no key</span></div>
+        <div class="stat"><b>Streamlit</b><span>scipy · Plotly</span></div>
+        <div class="stat"><b>151 tests</b><span>plus offline demo mode</span></div>
+      </div>
+      <a class="code-link" href="https://github.com/andrewjounkim/strikeout-lab" target="_blank" rel="noopener">View the code ↗</a>
       &nbsp;&nbsp;
-      <a class="code-link" href="https://github.com/andrewjounkim/portfolio/blob/main/linemoves.js" target="_blank" rel="noopener">View the code ↗</a>
+      <a class="code-link" href="https://github.com/andrewjounkim/strikeout-lab#readme" target="_blank" rel="noopener">Read the README ↗</a>
     </div>
   </section>
 </main>
