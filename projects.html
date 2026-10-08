@@ -125,6 +125,28 @@
       &nbsp;&nbsp;
       <a class="code-link" href="https://github.com/andrewjounkim/papertrail-frontend" target="_blank" rel="noopener">View the frontend code ↗</a>
     </div>
+
+    <div class="meta-project detail-card shots">
+      <div class="eyebrow"><span class="tag" style="color:var(--eosin)"></span>Also a project · Computer vision + installable web app</div>
+      <h3>Eye Strain Monitor</h3>
+      <div class="photo-strip">
+        <figure><img src="images/eyestrain-intro.jpg" alt="Eye Strain Monitor's intro screen: a large animated eye logo above the word Begin" loading="lazy"><figcaption>The intro: the eye draws itself in, follows your cursor, and blinks. Click it to zoom into the pupil and enter the app.</figcaption></figure>
+        <figure><img src="images/eyestrain-widget.jpg" alt="Three states of the floating widget: normal with a green tint, low blink rate with a muted red tint, and a nudge message with a warmer orange tint" loading="lazy"><figcaption>The floating widget stays on top of other apps and mirrors your eyes live. When your blink rate stays low it shows a gentle nudge (shown here with simulated readings).</figcaption></figure>
+        <figure><img src="images/eyestrain-history.jpg" alt="Eye Strain Monitor's History page with a trend chart of blinks per minute across sessions" loading="lazy"><figcaption>History: blinks per minute across sessions with a 5-session average, to see whether your habits are improving (sample data shown).</figcaption></figure>
+      </div>
+      <p class="photo-hint">swipe for more →</p>
+      <p>A webcam-based monitor for digital eye strain that runs entirely in the browser: no video ever leaves the device. MediaPipe's face landmark model tracks the eyes, and the app turns that into blink rate, full vs. incomplete blinks, gaze, and an estimate of screen distance from the size of the iris. Detection runs in a Web Worker fed directly by the camera, so it keeps working when the window is hidden or minimized (measured at ~20 fps hidden, against 0 fps for the main-thread version). A floating always-on-top widget mirrors your eyes and nudges you to blink or lean back, sessions end with a summary, and a history page charts the trend. Installable as an app. Built for CMU 15-113's Creative Web App project; desktop-first, since it needs a webcam.</p>
+      <div class="stat-row">
+        <div class="stat"><b>MediaPipe</b><span>on-device face tracking</span></div>
+        <div class="stat"><b>Web Worker</b><span>keeps running when hidden</span></div>
+        <div class="stat"><b>PWA + Pages</b><span>installable, live deploy</span></div>
+      </div>
+      <a class="code-link" href="https://andrewjounkim.github.io/eyestrain-monitor/" target="_blank" rel="noopener">Try it live ↗</a>
+      &nbsp;&nbsp;
+      <a class="code-link" href="https://github.com/andrewjounkim/eyestrain-monitor" target="_blank" rel="noopener">View the code ↗</a>
+      &nbsp;&nbsp;
+      <a class="code-link" href="https://github.com/andrewjounkim/eyestrain-monitor#readme" target="_blank" rel="noopener">Read the README ↗</a>
+    </div>
   </section>
 </main>
 
