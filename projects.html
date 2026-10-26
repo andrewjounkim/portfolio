@@ -147,6 +147,26 @@
       &nbsp;&nbsp;
       <a class="code-link" href="https://github.com/andrewjounkim/eyestrain-monitor#readme" target="_blank" rel="noopener">Read the README ↗</a>
     </div>
+
+    <div class="meta-project detail-card shots">
+      <div class="eyebrow"><span class="tag" style="color:var(--eosin)"></span>Also a project · Python + vector database</div>
+      <h3>DiagKnows</h3>
+      <div class="photo-strip">
+        <figure><img src="images/diagknows-search.jpg" alt="DiagKnows in a terminal: the query 'breakouts all over my forehead and chin, whiteheads everywhere' returns Acne as a strong match with Dermatologist as the doctor to see" loading="lazy"><figcaption>Search by meaning: "breakouts… whiteheads everywhere" finds Acne, matching patient descriptions that mostly use different words, like "pimples" and "blackheads".</figcaption></figure>
+        <figure><img src="images/diagknows-add.jpg" alt="DiagKnows adding a new Gout case, then finding it as the top result for a differently worded search" loading="lazy"><figcaption>Add a case while the app is running, and it's searchable immediately: a differently worded description finds it first.</figcaption></figure>
+        <figure><img src="images/diagknows-safety.jpg" alt="DiagKnows answering an off-topic query with No confident match, and a sudden vision loss description with a Seek Emergency Care warning" loading="lazy"><figcaption>It won't guess: off-topic text gets "No confident match", and red-flag symptoms get an emergency warning instead of a ranking.</figcaption></figure>
+      </div>
+      <p class="photo-hint">swipe for more →</p>
+      <p>A command-line symptom explorer built on a vector database. You describe how you feel in plain English, and it searches 1,200 real patient symptom descriptions (the Symptom2Disease dataset) by meaning rather than keywords. It then ranks the conditions your description most resembles, weighting each nearby case by how close it is, and suggests which kind of doctor to see. Distance cutoffs picked from real query data let it say "no confident match" instead of guessing, and a separate collection of red-flag symptoms routes emergencies to a seek-care warning. Users can add their own cases at runtime, everything persists between runs, and an optional OpenAI step explains the matches using only the retrieved text. Built for CMU 15-114's vector database assignment as an educational tool, not a diagnosis. It runs locally in the terminal, so this page links to the code and screenshots.</p>
+      <div class="stat-row">
+        <div class="stat"><b>ChromaDB</b><span>persistent, local</span></div>
+        <div class="stat"><b>1,200 cases</b><span>24 conditions + user-added</span></div>
+        <div class="stat"><b>MiniLM</b><span>local embeddings, no key</span></div>
+      </div>
+      <a class="code-link" href="https://github.com/andrewjounkim/diagknows" target="_blank" rel="noopener">View the code ↗</a>
+      &nbsp;&nbsp;
+      <a class="code-link" href="https://github.com/andrewjounkim/diagknows#readme" target="_blank" rel="noopener">Read the README ↗</a>
+    </div>
   </section>
 </main>
 
