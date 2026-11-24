@@ -403,3 +403,6 @@ main > section{ padding: 140px 0 96px; }
 /* Screenshot strips (Strikeout Lab card): full screenshots, not cropped like the project photos above */
 .shots .photo-strip img{ height:440px; object-fit:cover; object-position:top; background:var(--paper); }
 @media (max-width: 520px){ .shots .photo-strip img{ height:250px; } }
+/* Tall phone screenshots: show the whole screen instead of cropping to the strip's width. */
+.shots .photo-strip.phone img{ object-fit:contain; object-position:center; }
+@media (max-width: 520px){ .shots .photo-strip.phone img{ height:360px; } }
